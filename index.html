@@ -800,6 +800,106 @@
           opacity: 1;
         }
       }
+
+      /* Retro Footer Styles */
+      .retro-footer {
+        margin-top: 30px;
+        padding: 15px 20px;
+        background: linear-gradient(
+          135deg,
+          var(--bg-tertiary),
+          var(--bg-secondary)
+        );
+        border-radius: var(--radius-md);
+        border: 2px solid var(--border-medium);
+        text-align: center;
+        box-shadow: var(--shadow-md);
+      }
+
+      .visitor-counter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-family: "Courier New", monospace;
+      }
+
+      .counter-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .odometer {
+        background: linear-gradient(135deg, var(--text-primary), #2a2a2a);
+        color: var(--primary-color);
+        padding: 8px 12px;
+        border-radius: var(--radius-sm);
+        border: 2px solid var(--border-dark);
+        font-family: "Courier New", monospace;
+        font-size: 1.1rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-shadow: 0 0 3px rgba(255, 107, 0, 0.3);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1),
+          0 2px 8px rgba(255, 107, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .odometer:hover {
+        transform: translateY(-1px);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1),
+          0 4px 12px rgba(255, 107, 0, 0.25);
+      }
+
+      .odometer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 107, 0, 0.1),
+          transparent
+        );
+        animation: shimmer 4s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .retro-footer {
+          margin-top: 20px;
+          padding: 12px 15px;
+        }
+
+        .visitor-counter {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .counter-label {
+          font-size: 0.75rem;
+        }
+
+        .odometer {
+          font-size: 1rem;
+          padding: 6px 10px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -845,9 +945,6 @@
           <span id="statusIndicator" class="status-indicator status-red"></span>
           <span id="statusText">Connecting to XRPL Network...</span>
         </div>
-
-        <!-- Page Views Counter -->
-        <div data-page-views class="loading">Loading view count...</div>
 
         <!-- Ledger Stream Section -->
         <div class="ledger-container">
@@ -1022,6 +1119,14 @@
           <div id="searchTransactionDetailsContent"></div>
         </div>
       </div>
+
+      <!-- Retro Footer -->
+      <footer class="retro-footer">
+        <div class="visitor-counter">
+          <span class="counter-label">👁️ Site Views:</span>
+          <div class="odometer" data-page-views>000000</div>
+        </div>
+      </footer>
     </div>
     <script src="https://unpkg.com/xrpl@3.1.0/build/xrpl-latest-min.js"></script>
     <script src="https://hard-house.club/track.js"></script>
@@ -1700,7 +1805,6 @@
           await client.connect();
 
           updateStatus("Connected to XRPL Mainnet", "connected");
-          showMessage("Successfully connected to XRPL network!", "success");
 
           // Subscribe to ledger stream
           subscribeLedgerStream();
@@ -2306,6 +2410,9 @@
         // Initialize ledger stream with placeholders
         initializeLedgerStream();
 
+        // Set up page view counter observer
+        setupPageViewCounter();
+
         // Check URL parameters first
         const params = new URLSearchParams(window.location.search);
         const query = params.get("q");
@@ -2328,6 +2435,52 @@
           showHomePage();
         }
       });
+
+      // Function to pad page view count with leading zeros
+      function setupPageViewCounter() {
+        const odometerElement = document.querySelector("[data-page-views]");
+        if (!odometerElement) return;
+
+        // Create a MutationObserver to watch for changes to the odometer content
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (
+              mutation.type === "childList" ||
+              mutation.type === "characterData"
+            ) {
+              const currentText =
+                odometerElement.textContent || odometerElement.innerText;
+
+              // Only process if it's a number and not the loading text
+              if (/^\d+$/.test(currentText.trim())) {
+                const paddedValue = currentText.trim().padStart(6, "0");
+                if (odometerElement.textContent !== paddedValue) {
+                  odometerElement.textContent = paddedValue;
+                }
+              }
+            }
+          });
+        });
+
+        // Start observing
+        observer.observe(odometerElement, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
+
+        // Also check periodically in case the tracking script updates the content differently
+        setInterval(() => {
+          const currentText =
+            odometerElement.textContent || odometerElement.innerText;
+          if (/^\d+$/.test(currentText.trim())) {
+            const paddedValue = currentText.trim().padStart(6, "0");
+            if (odometerElement.textContent !== paddedValue) {
+              odometerElement.textContent = paddedValue;
+            }
+          }
+        }, 1000);
+      }
     </script>
   </body>
 </html>
