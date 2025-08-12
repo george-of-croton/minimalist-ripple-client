@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://george-of-croton.github.io/minimalist-ripple-client/sitemap.xml
+
+# Optional: Block crawling of any sensitive paths (none in this case)
+# Disallow: /private/
