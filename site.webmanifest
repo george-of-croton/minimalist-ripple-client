@@ -1,0 +1,43 @@
+{
+  "name": "Tristero XRP Wallet",
+  "short_name": "Tristero",
+  "description": "Secure browser-based XRP wallet for XRPL blockchain transactions and account management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#ff6b00",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon-16.svg",
+      "sizes": "16x16",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["finance", "utilities"],
+  "lang": "en-US",
+  "scope": "/",
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Send Payment",
+      "short_name": "Send",
+      "description": "Send XRP payments",
+      "url": "/#payment",
+      "icons": []
+    },
+    {
+      "name": "Search XRPL",
+      "short_name": "Search",
+      "description": "Search addresses and transactions",
+      "url": "/#search",
+      "icons": []
+    }
+  ]
+}
