@@ -389,11 +389,18 @@
         <div class="balance" id="balance">0 XRP</div>
         <div class="balance-label">Available Balance</div>
         <div style="margin-top: 20px">
-          <div class="info-row" style="flex-direction: column; align-items: flex-start;">
+          <div
+            class="info-row"
+            style="flex-direction: column; align-items: flex-start"
+          >
             <span class="info-label">Address</span>
             <div class="address-display">
               <span class="info-value" id="address">-</span>
-              <button class="copy-btn" onclick="copyAddress()" title="Copy address">
+              <button
+                class="copy-btn"
+                onclick="copyAddress()"
+                title="Copy address"
+              >
                 📋 Copy
               </button>
             </div>
@@ -461,11 +468,16 @@
     </div>
 
     <!-- Transaction Detail Modal -->
-    <div id="txModal" class="modal-overlay" style="display: none;" onclick="closeTransactionModal(event)">
+    <div
+      id="txModal"
+      class="modal-overlay"
+      style="display: none"
+      onclick="closeTransactionModal(event)"
+    >
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-close" onclick="closeTransactionModal()">×</div>
         <div class="card-title">Transaction Details</div>
-        <div id="txModalContent" style="margin-top: 16px;"></div>
+        <div id="txModalContent" style="margin-top: 16px"></div>
       </div>
     </div>
 
@@ -481,34 +493,41 @@
       function copyAddress() {
         const addressText = currentAddress;
         if (!addressText) return;
-        
-        navigator.clipboard.writeText(addressText).then(() => {
-          showMessage("Address copied to clipboard!", "success");
-        }).catch(() => {
-          showMessage("Failed to copy address", "error");
-        });
+
+        navigator.clipboard
+          .writeText(addressText)
+          .then(() => {
+            showMessage("Address copied to clipboard!", "success");
+          })
+          .catch(() => {
+            showMessage("Failed to copy address", "error");
+          });
       }
 
       // View transaction details in modal
       async function viewTransactionDetails(txHash) {
         try {
           showMessage("Loading transaction details...", "loading");
-          
+
           const txResult = await client.request({
             command: "tx",
             transaction: txHash,
-            binary: false
+            binary: false,
           });
 
           const tx = txResult.result;
           const rippleEpochOffset = 946684800;
-          const date = tx.date ? new Date((tx.date + rippleEpochOffset) * 1000) : new Date();
+          const date = tx.date
+            ? new Date((tx.date + rippleEpochOffset) * 1000)
+            : new Date();
 
           let html = `
             <div class="tx-detail">
               <div class="tx-detail-row">
                 <span class="info-label">Hash</span>
-                <span class="info-value" style="word-break: break-all;">${tx.hash}</span>
+                <span class="info-value" style="word-break: break-all;">${
+                  tx.hash
+                }</span>
               </div>
               <div class="tx-detail-row">
                 <span class="info-label">Type</span>
@@ -524,56 +543,98 @@
               </div>
               <div class="tx-detail-row">
                 <span class="info-label">Status</span>
-                <span class="info-value" style="color: ${tx.meta?.TransactionResult === 'tesSUCCESS' ? 'var(--success)' : 'var(--error)'}">
-                  ${tx.meta?.TransactionResult || 'Unknown'}
+                <span class="info-value" style="color: ${
+                  tx.meta?.TransactionResult === "tesSUCCESS"
+                    ? "var(--success)"
+                    : "var(--error)"
+                }">
+                  ${tx.meta?.TransactionResult || "Unknown"}
                 </span>
               </div>
               <div class="tx-detail-row">
                 <span class="info-label">From Account</span>
-                <span class="info-value" style="word-break: break-all;">${tx.Account}</span>
+                <span class="info-value" style="word-break: break-all;">${
+                  tx.Account
+                }</span>
               </div>
-              ${tx.Destination ? `
+              ${
+                tx.Destination
+                  ? `
                 <div class="tx-detail-row">
                   <span class="info-label">To Account</span>
                   <span class="info-value" style="word-break: break-all;">${tx.Destination}</span>
                 </div>
-              ` : ''}
-              ${tx.Amount ? `
+              `
+                  : ""
+              }
+              ${
+                tx.Amount
+                  ? `
                 <div class="tx-detail-row">
                   <span class="info-label">Amount</span>
-                  <span class="info-value">${typeof tx.Amount === 'string' ? xrpl.dropsToXrp(tx.Amount) + ' XRP' : JSON.stringify(tx.Amount)}</span>
+                  <span class="info-value">${
+                    typeof tx.Amount === "string"
+                      ? xrpl.dropsToXrp(tx.Amount) + " XRP"
+                      : JSON.stringify(tx.Amount)
+                  }</span>
                 </div>
-              ` : ''}
-              ${tx.Fee ? `
+              `
+                  : ""
+              }
+              ${
+                tx.Fee
+                  ? `
                 <div class="tx-detail-row">
                   <span class="info-label">Fee</span>
                   <span class="info-value">${xrpl.dropsToXrp(tx.Fee)} XRP</span>
                 </div>
-              ` : ''}
-              ${tx.Sequence ? `
+              `
+                  : ""
+              }
+              ${
+                tx.Sequence
+                  ? `
                 <div class="tx-detail-row">
                   <span class="info-label">Sequence</span>
                   <span class="info-value">${tx.Sequence}</span>
                 </div>
-              ` : ''}
-              ${tx.DestinationTag !== undefined ? `
+              `
+                  : ""
+              }
+              ${
+                tx.DestinationTag !== undefined
+                  ? `
                 <div class="tx-detail-row">
                   <span class="info-label">Destination Tag</span>
                   <span class="info-value">${tx.DestinationTag}</span>
                 </div>
-              ` : ''}
-              ${tx.SourceTag !== undefined ? `
+              `
+                  : ""
+              }
+              ${
+                tx.SourceTag !== undefined
+                  ? `
                 <div class="tx-detail-row">
                   <span class="info-label">Source Tag</span>
                   <span class="info-value">${tx.SourceTag}</span>
                 </div>
-              ` : ''}
-              ${tx.Memos && tx.Memos.length > 0 ? `
+              `
+                  : ""
+              }
+              ${
+                tx.Memos && tx.Memos.length > 0
+                  ? `
                 <div class="tx-detail-row">
                   <span class="info-label">Memos</span>
-                  <span class="info-value">${JSON.stringify(tx.Memos, null, 2)}</span>
+                  <span class="info-value">${JSON.stringify(
+                    tx.Memos,
+                    null,
+                    2
+                  )}</span>
                 </div>
-              ` : ''}
+              `
+                  : ""
+              }
             </div>
           `;
 
@@ -587,7 +648,11 @@
       }
 
       function closeTransactionModal(event) {
-        if (!event || event.target.id === 'txModal' || event.target.className === 'modal-close') {
+        if (
+          !event ||
+          event.target.id === "txModal" ||
+          event.target.className === "modal-close"
+        ) {
           document.getElementById("txModal").style.display = "none";
         }
       }
@@ -804,7 +869,9 @@
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
                   <span>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</span>
-                  <span style="color: ${statusColor};">${status} ${meta.TransactionResult}</span>
+                  <span style="color: ${statusColor};">${status} ${
+              meta.TransactionResult
+            }</span>
                 </div>
                 ${
                   counterparty
@@ -815,13 +882,20 @@
                     : ""
                 }
                 <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">
-                  <strong>Hash:</strong> <span style="font-family: monospace;">${txHash.substring(0, 16)}...${txHash.substring(txHash.length - 8)}</span>
+                  <strong>Hash:</strong> <span style="font-family: monospace;">${txHash.substring(
+                    0,
+                    16
+                  )}...${txHash.substring(txHash.length - 8)}</span>
                 </div>
-                ${tx.DestinationTag !== undefined ? `
+                ${
+                  tx.DestinationTag !== undefined
+                    ? `
                   <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">
                     <strong>Destination Tag:</strong> ${tx.DestinationTag}
                   </div>
-                ` : ''}
+                `
+                    : ""
+                }
                 <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">
                   <strong>Fee:</strong> ${fee} XRP
                 </div>
